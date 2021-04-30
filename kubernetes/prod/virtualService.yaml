@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: central-cash-management
+  namespace: fusionx-ui
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - default/fusionx-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /web/central-cash-management
+      route:
+        - destination:
+            host: central-cash-management.fusionx-ui.svc.cluster.local
+            port:
+              number: 80

@@ -1,0 +1,20 @@
+import { action } from "@storybook/addon-actions";
+import { Button } from "@storybook/react/demo";
+import { withKnobs, text, boolean, number } from "@storybook/addon-knobs";
+
+<Meta title="MDX/Checkbox" component={Button} />
+
+# Checkbox
+
+With `MDX` we can define a story for `Checkbox` right in the middle of our
+markdown documentation.
+
+<Preview>
+  <Story name="all checkboxes">
+    <Button onClick={action("clicked")}>
+      <span role="img" aria-label="so cool">
+        Hello World
+      </span>
+    </Button>
+  </Story>
+</Preview>

@@ -1,0 +1,227 @@
+Account Opening:
+    Step 1 - Customer Details:
+        Card 1:
+        ✔ casaApplicantStatus was missing @done(20-07-21 14:03) a default field is added in EmptyCustomerRecord
+            casaApplicantDetails: Array(1)
+            casaAccountRole: ""
+            casaApplicantStatus: "ACTIVE"
+            casaBeneficialOwnership: ""
+            casaCustomerCode: "SIN01"
+            casaCustomerId: 156
+            casaCustomerName: "Ruwanga Priyasad"
+            casaFullLegalName: ""
+            casaKycStatus: "ACTIVE"
+            casaOwnershipType: "SOLE OWNER"
+            guardianDetail: []
+            signatureId: 0
+            taxPercerntage: 99
+        Card 2:
+            ✔ Guardian Details are not attched @done(20-07-21 14:33) added to the state later
+            {
+            guardianId: 181
+            guardianName: "Sahani Madushani"
+            }
+        Card 3:
+            ✔ Working fine @done(20-07-21 14:13)
+            {customerVisitRequired: "Yes", noOfVisitPerPeriod: 2}
+        Card 4:
+            ✔ Need to check the field mappings @done(20-07-21 17:34)
+            // globalState result
+            {
+                casaCustomerId: 156
+                casaNomineeId: 181
+                casaNomineeName: "Surya Madushani"
+                casaNomineeStatus: "YES"
+                casaPropotionRatio: 1
+                identification: 181
+            }
+            // The nominee interface.
+            {
+                casaCustomerId: number;
+                casaNomineeId: number;
+                casaNomineeName: string;
+                casaNomineeStatus: string;
+                casaPropotionRatio: string;
+                identification?: string;
+            }
+
+    Step 2 - Product Details:
+        // -- subProducts id is hard coded.
+        Card 1:
+            ✔ Not updating the Global state @Dinura -- casaSubProductCode:"" @done(20-07-22 14:44)
+            -- check if there there needs to be any extra fields and check if the field names are correct
+
+    Step 3 -  Account Details:
+        Card 1:
+            ✔ Casa Currency and  needs to be resolved @Dinura @done(20-07-22 17:43)
+            -- Add Custom Code in product details page -- make sure to add use effect block which sets form value based on global form value
+            // Global state result
+            {
+                "": "XXXXXXXXX"
+                accountDescription: "wweett"
+                casaAccountName: "23424"
+                casaAnticipatedFrequencyId: 2
+                casaAnticipatedValueId: 33
+                casaCurrency: undefined
+                casaNickName: "wrt"
+                casaSchemeCode: "SORT"
+            } 
+        Card 2: @Dinura
+           
+             ✔ Account control data not binded @done(20-07-22 14:15)
+            ✔ Need to add display condition in minor restriction @done(20-07-22 14:15)
+            -- Add a key and add conditional logic (eg -   displayCondition: (formValue) =>
+            formValue.casaEnableDisableInterestCalculation === "Yes",)
+        Card 3: @Dinura
+            ✔ Account Purpose data not binded @done(20-07-22 15:38)
+            -- Use Manual Mapping using use Effect on accountPurposesObject
+            ✔ Remarks on account purpose is not binded. @done(20-07-22 15:38)
+            -- use manual form field binding by using value onChange , useState
+        Card 4:@Dinura
+            ✔ Source of Funds data not binded @done(20-07-22 16:04)
+            ✔ Remarks on Source of Funds is not binded. @done(20-07-22 16:04)
+
+    Step 4 - Statement Details:
+        Card 1: @Dinura
+            ✔ Statement details data is not binded. @done(20-07-22 17:12)
+            -- use useeffect on statementOptions to manually bind
+         
+    Step 5 - Interest Details:       
+        Card 1: @High
+            ✔ interestCalculationStartDate  is not binded @done(20-07-22 17:13)
+        Card 2:
+            ✔ Credit Interest Posting Details data is not binded @done(20-07-22 17:51)
+        Card 3: @high  0 @Ruban 
+            ☐ For Internal Party
+            ☐ paymentModeDescription: "", not binded    
+             // payment mode is getting from a select menu and its id also need to be saved.  
+            {
+                bankBranchId: 0
+                bankBranchName: ""
+                bankId: 0
+                bankName: ""
+                beneficiaryId: 0
+                beneficiaryName: "K.K.K Satharasinghe"
+                crebitInterestPostAccount: "051100000207"
+                crebitInterestPostType: "Self"
+                debitInterestPostAccount: ""
+                debitInterestPostType: "Self"
+                otherPostingMethod: ""
+                otherPostingMethodId: 0
+                paymentModeDescription: ""
+                paymentModeId: 967735
+                paymentSendMethod: ""
+                paymentSendMethodId: 0
+                propotionRatio: 1
+                status: "ACTIVE"
+            }
+            ✔ For External Party @high @done(20-07-21 18:25)
+            ✔ bankBranchName: "",paymentModeId: "",paymentSendMethodId: "" need to be added. @high @done(20-07-21 18:25)
+                {
+                    bankBranchId: 3463
+                    bankBranchName: "NEGOMBO"
+                    bankId: 2
+                    bankName: "AMANA BANK LIMITED"
+                    beneficiaryId: 0
+                    beneficiaryName: "qwewr"
+                    crebitInterestPostAccount: "234234"
+                    crebitInterestPostType: "Self"
+                    debitInterestPostAccount: ""
+                    debitInterestPostType: "Self"
+                    otherPostingMethod: ""
+                    otherPostingMethodId: 0
+                    paymentModeDescription: "Internal"
+                    paymentModeId: 1564
+                    paymentSendMethod: "Online"
+                    paymentSendMethodId: 1566
+                    propotionRatio: 2
+                    status: "ACTIVE"
+                }
+
+        Card 4:
+            ☐ paymentModeDescription: "", paymentModeId: undefined not binded @high
+        
+                {
+                    bankBranchId: 0
+                    bankBranchName: ""
+                    bankId: 0
+                    bankName: ""
+                    beneficiaryId: 0
+                    beneficiaryName: ""
+                    crebitInterestPostAccount: ""
+                    crebitInterestPostType: "Self"
+                    debitInterestPostAccount: "K.K.K Satharasinghe"
+                    debitInterestPostType: "Self"
+                    otherPostingMethod: ""
+                    otherPostingMethodId: 0
+                    paymentModeDescription: ""
+                    paymentModeId: undefined
+                    paymentSendMethod: ""
+                    paymentSendMethodId: 0
+                    propotionRatio: 4
+                    status: "ACTIVE"     
+                }   
+
+    Step 6 - Overdraft Details:       
+        Card 1: - @Dinura 
+            ✔ Need to add display condition in allowed overdraft @done(20-07-22 17:58)
+            ☐ Overdraft details need to be bind
+        Card 2:
+            {
+                accountName: "K.K.K Satharasinghe"
+                accountNo: "051100000207"
+                casaStatus: "ACTIVE"
+                propotion: 0
+            }  
+    
+    Step 7 - Preferences:
+        Card 1: @PENDING
+            ☐ SDK.AlertService.getAlertTypeByStatus("ACTIVE") gives an empty object.
+        Card 2: @Ruban
+            ☐ Alerting Rules table should be binded.
+        Card 3: @high 
+            ✔ chequeBookStockTypeId: null,chequeBookTypeId: null need to be binded. @done(20-07-21 18:57)
+        
+            {
+                casaAutoChequeBookRequestEnabled: "Yes"
+                casaAutoChequeBookRequestPeriod: "234"
+                casaAutoChequeBookRequestPeriodFrequency: 10
+                casaIsChequeBookEnabled: "Yes"
+                casaMaxAllowedCheckBooksPerRequest: "324"
+                casaStopRequest: "Yes"
+                chequeBookStockTypeId: 1265
+                chequeBookTypeId: 813
+                chequeTypeId: "Book"
+            }        
+
+    Step 8 - Card Information:
+        Card 1: @high 
+            
+            ✔ cardExpireDate,cardIssuedDate undefined @done(20-07-21 20:10)
+            {
+                blockTransactions: "No"
+                cardExpireDate: Moment {_isAMomentObject: true, _isUTC: false, _pf: {…}, _locale: Locale, _d: Fri Jul 10 2020 20:09:39 GMT+0530 (India Standard Time), …}
+                cardFeeEnabled: "No"
+                cardIssuedDate: Moment {_isAMomentObject: true, _isUTC: false, _pf: {…}, _locale: Locale, _d: Wed Jul 22 2020 20:09:37 GMT+0530 (India Standard Time), …}
+                cardNumber: "23432"
+                cardType: "CashCard"
+                collectionPoint: "Galle Branch"
+                foreignTransactionEnabled: "No"
+                nameOnCard: "2352sdf"
+                posEnabled: "No"
+                remarks: "qrwer"
+                schemeType: "SavingsMAnagement1"
+                widrawalLimit: "234"
+            }  
+            
+    Step 9 - Other:
+        Card 1: @Ruban @Dinura 
+            ☐ Document Upload need to be binded.
+        Card 2: @Dinura 
+            ☐ Operation instructions needs to be binded
+        Card 3:
+            {casaOtherRemarks: "ersers"}
+
+    Step 10 - Charges:
+        Card 1: @Dinura 
+            ☐ Charges needs to be binded.        

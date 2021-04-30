@@ -1,0 +1,114 @@
+LOLC:
+    Common:
+        ✔ Fix BreadCrumb @done(20-07-17 15:59)
+        ✔ Add Casa Module @done(20-07-17 16:00)
+        ✔ Add Under QA/Construction Pages @done(20-07-17 15:59)
+    Account Opening:
+        ✔ Fill in Tab Details @done(20-07-17 14:13)
+        ✔ Generally Fix Spacing issues between first card in a tab  @done(20-07-17 16:04)
+        ✔ Bind Credit Interest Rate Details @high  -- have to disable Credit Interest Rate Details
+        ✔ Validate Method is added & Forward ref is added to all cards  @done(20-07-17 16:51)
+        ✔ Tabs does not automatically get activated @done(20-07-17 18:14)
+        Step 0 - Selecting Customers:
+            ☐ Need to Link New Customer URL
+            ✔ Need to clarify Ticket Number Side Bar Card @LOLC --remove ticket number @done(20-07-17 14:21)
+            ☐ Two Customer Accounts to test Corperat Account and personal account that returns notification details @LOLC 
+            Select Customer Modal:
+                ✔ Modal Needs to have a minumum Height @done(20-07-14 17:17)
+                ✔ Fix Spacing Issues in Search Button @done(20-07-14 17:34)
+                ✔ Widen the Search by Dropdown @done(20-07-14 17:17)
+                ✔ Need to add a placeholder for the search input @done(20-07-14 17:34)
+                ✔ When modal is opened for the first time, loading indicator should not be there, instead a message saying search customer should be there @done(20-07-14 17:34) - Search Customer, "Type in a keyword, Select Search type and then press search to begin searching"
+                ☐ Search Customer call returns "No Content" Ideally it should return empty arrray @LOLC
+                ✔ Add Padding for the pagination @done(20-07-14 14:31)
+                ☐ Pagination Data is not there for customer search API @Ishanka
+                ☐ Get Sample Data from LOLC to test rest of the Search Functions @LOLC
+                ☐ Customer photo is not enabled @LOLC --show an icon 15/07/2020 
+                ☐ Loading Indicator does not work properly
+        Step 1 - Customer Details:
+            Customer Details:
+                ✔ Date of Birth should be formatted @done(20-07-14 15:23)
+                ✔ Table border should be removed @done(20-07-14 16:18)
+                ✔ Ownership Type should be selected by default @done(20-07-14 16:17)
+                ✔ Tax Percentage should be selected @done(20-07-14 16:17)
+                ✔ Alert should be shown if, there are more than one Sole Owner @done(20-07-14 16:45)
+                ✔ Alert should be shown if, tax percentage increase 100 @done(20-07-14 16:45)
+                ✔ Add Another Customer should be floated right @done(20-07-14 16:19)
+                ✔ Add another customer should have an icon @done(20-07-14 16:21)
+                ☐ View Button Shold Open new page
+                ✔ Remove button should remove the customer @done(20-07-14 17:35)
+                ✔ If there is only one customer selected, remove button should be disabled @done(20-07-14 16:37)
+                ✔ Add 3 cards in the right hand side @done(20-07-14 17:35)
+                ☐ Even the tax percentage is 100 the error messege is shown.
+                ☐ Global Form State is not modifed when the customer is just selected
+            Guardian Details:
+                ✔ Align Add Anorth Guardian Details to the right hand side  @done(20-07-17 12:59)
+                ☐ Add a conditional tab for guardian details tab
+            Disbale Notes:
+                ☐ Check
+            Nominee Details:
+                ✔ Bind Nominee Details End to end @done(20-07-16 15:21)
+                ✔ Date of Birth should be formatted right @done(20-07-16 15:17)
+                ☐ Add Tax Percentage Validation
+            ☐ Validate Step
+        Step 2 - Product Details:
+            ✔ Description is missing @done(20-07-16 16:19)
+            ✔ Field Names should be bold @done(20-07-16 16:27)
+            ✔ Until Account type is selected, bottom fields should not be visible @done(20-07-16 16:27)
+            ✔ Choose a sub product styling needs to be fixed @done(20-07-16 16:32)
+            ☐ Check if the final form value is updated
+            ☐ Product Details should be fixed @LOLC 
+            ✔ Put product details in the card template  @done(20-07-17 13:10)
+            ☐ For sub product items the method dosent give data. Currently using a hardcoded value to get sub product.
+            ☐ In information section the given method gives an empty array.
+          
+        Step 3 - Acount Details:
+            ✔ Account Currency should be readOnly @done(20-07-16 16:43)
+            ✔ Desciption on card @done(20-07-16 16:44)
+            ☐ Account Purpose should be fixed
+            ☐ Source of funds should be fixed
+            ☐  Not yet tested out casaCurrency method.
+        Step 4 - Statement Details:
+            ☐ Fix Statement Details
+        Step 5 - Interest Details:
+            ☐ Fix Credit Interest Details Checkbox issue
+            ☐ Fix External Party
+            ☐ Check Add Internal Party
+            ☐ Filter out Editable Table from Debit Interest Posting Details
+            ✔ API Clarifications in Internal Party @LOLC @done(20-07-17 15:16)
+            ✔ API Clarifications in Debit Intrest Posting Details @LOLC @done(20-07-17 15:16)
+            ☐ Fix Automatic Disabling of section in Credit Interst Benifiary Details @high @Ruban
+            ☐ Fix Unknown input in Debit Interest Posting Details @high
+        Step 6 - Overdraft Details:
+            ✔ Chunk Overdraft and add conditional Fields @high @done(20-07-20 14:52)
+            ✔ Buffer Limit should be number  @done(20-07-17 13:50)
+            ✔ Allowed Overdraft and Interest on Overdraft have the same fields @LOLC @done(20-07-17 14:54)
+            ✔ Create Select Account Selector Modal @high @done(20-07-19 17:38)
+        Step 7 - Preferences:
+            ✔ Add a loading indicator for the notification methods  @done(20-07-17 13:13)
+            ☐ Finish Notification Method @Ruban
+            ✔ remove Passbook details and Sweep Instructions @done(20-07-17 11:16)
+            ✔ Break Notification Methods and Alerting rules into two cards  @done(20-07-17 13:14)
+            ☐ Chequebook Details Fields does not work properly @high 
+            ✔ Remove Passbook Details and Sweep Instructions Card  @done(20-07-17 13:14)
+            ✔ Align Add Button with proper spacing  @done(20-07-17 13:48)
+            ✔ Add Proper Spacing to the contact numbers   @done(20-07-17 13:49)
+            ✔ Add Header Background color to table  @done(20-07-17 13:49)
+            ✔ Add Form Card Template to Notification Methods  @done(20-07-17 13:49)
+            ✔ Why transaction limit is marked as mandotory @LOLC @done(20-07-17 15:14)
+            ✔ API URLs are wrong @Ishanka Eg:  getContactByCustomerId @done(20-07-17 15:16)
+        Step 8 - Card Information:
+            ✔ Check for Disabled Fields @LOLC @done(20-07-17 14:55)
+            ☐ Check for Validations
+        Step 9 - Other:
+            ✔ Remove Introducer Card @done(20-07-17 11:27)
+            ✔ Remove Document Name @done(20-07-17 11:28)
+            ☐ Check Document Type @LOLC 
+            ☐ Check Document Uploading @Ruban
+            ☐ Operations Instructions needs to be fixed
+            ✔ Remove Manual Workflow @done(20-07-17 11:27)
+        Step 10 - Charges:
+            ✔ Action Changes of UI  @Clarification @LOLC @done(20-07-17 15:12)
+
+
+

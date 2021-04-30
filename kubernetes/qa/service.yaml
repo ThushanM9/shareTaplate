@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: comn-supplies-entities
+  namespace: fusionx-ui
+  labels:
+    app: comn-supplies-entities
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: comn-supplies-entities
+  type: ClusterIP

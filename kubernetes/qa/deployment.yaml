@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: central-cash-management
+  namespace: fusionx-ui
+  labels:
+    app: central-cash-management
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: central-cash-management
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: central-cash-management
+    spec:
+      imagePullSecrets:
+        - name: registry-secret
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - central-cash-management
+                topologyKey: failure-domain.beta.kubernetes.io/zone
+              weight: 100
+      containers:
+        - name: central-cash-management
+          image: fra.ocir.io/lolctech/fxapiuser/central-cash-management-qa:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 80
+          resources:
+            requests:
+              memory: "1.5Gi"
+              cpu: "750m"
+            limits:
+              memory: "3Gi"
+              cpu: "1000m"
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /web/central-cash-management
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 300
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /web/central-cash-management
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 300
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+      terminationGracePeriodSeconds: 60

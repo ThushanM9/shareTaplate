@@ -1,0 +1,403 @@
+box: node:14.15.4
+no-response-timeout: 10       
+#this is for building the code
+build-and-push-test:
+  steps:
+    - script:
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
+          yarn
+          yarn sonar
+          CI=false yarn run build  
+    - internal/docker-build:
+        dockerfile: Dockerfile
+        image-name: central-cash-management
+
+     # Push to OCI-R -
+    - internal/docker-push:
+        image-name: central-cash-management
+        username: $USERNAME
+        password: $PASSWORD
+        registry: $REGISTRY
+        repository: $USERNAME/$REPOSITORY_TEST
+
+    # Copy sre files to location that gets passed along to next workflow
+    - script:
+        name: copy files
+        code: |
+           cp -R /pipeline/source/kubernetes "$WERCKER_OUTPUT_DIR"    
+           
+  # Notify if the steps are failure
+  after-steps:
+     - install-packages:
+         packages: ruby
+     - wantedly/pretty-slack-notify:
+         webhook_url: $SLACK_WEBHOOK_URL
+         failed_message: FAILURE - Pipeline completed. $WERCKER_RUN_URL
+
+             
+#this is for building the code
+build-and-push-dev:
+  steps:
+    - script:
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
+          yarn
+          yarn sonar
+          CI=false yarn run build  
+    - internal/docker-build:
+        dockerfile: Dockerfile
+        image-name: central-cash-management
+
+     # Push to OCI-R -
+    - internal/docker-push:
+        image-name: central-cash-management
+        username: $USERNAME
+        password: $PASSWORD
+        registry: $REGISTRY
+        repository: $USERNAME/$REPOSITORY_DEV
+
+    # Copy sre files to location that gets passed along to next workflow
+    - script:
+        name: copy files
+        code: |
+           cp -R /pipeline/source/kubernetes "$WERCKER_OUTPUT_DIR"    
+           
+  # Notify if the steps are failure
+  after-steps:
+     - install-packages:
+         packages: ruby
+     - wantedly/pretty-slack-notify:
+         webhook_url: $SLACK_WEBHOOK_URL
+         failed_message: FAILURE - Pipeline completed. $WERCKER_RUN_URL
+ 
+#this is for building the code
+build-and-push-uat:
+  steps:
+    - script:
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
+          yarn
+          yarn sonar
+          CI=false yarn run build  
+    - internal/docker-build:
+        dockerfile: Dockerfile
+        image-name: central-cash-management
+
+     # Push to OCI-R -
+    - internal/docker-push:
+        image-name: central-cash-management
+        username: $USERNAME
+        password: $PASSWORD
+        registry: $REGISTRY
+        repository: $USERNAME/$REPOSITORY_UAT
+
+    # Copy sre files to location that gets passed along to next workflow
+    - script:
+        name: copy files
+        code: |
+           cp -R /pipeline/source/kubernetes "$WERCKER_OUTPUT_DIR"    
+           
+  # Notify if the steps are failure
+  after-steps:
+     - install-packages:
+         packages: ruby
+     - wantedly/pretty-slack-notify:
+         webhook_url: $SLACK_WEBHOOK_URL
+         failed_message: FAILURE - Pipeline completed. $WERCKER_RUN_URL      
+
+#this is for building the code
+build-and-push-master:
+  steps:
+    - script:
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
+          yarn
+          yarn sonar
+          CI=false yarn run build  
+    - internal/docker-build:
+        dockerfile: Dockerfile
+        image-name: central-cash-management
+
+     # Push to OCI-R -
+    - internal/docker-push:
+        image-name: central-cash-management
+        username: $USERNAME
+        password: $PASSWORD
+        registry: $REGISTRY
+        repository: $USERNAME/$REPOSITORY_MASTER
+
+    # Copy sre files to location that gets passed along to next workflow
+    - script:
+        name: copy files
+        code: |
+           cp -R /pipeline/source/kubernetes "$WERCKER_OUTPUT_DIR"    
+           
+  # Notify if the steps are failure
+  after-steps:
+     - install-packages:
+         packages: ruby
+     - wantedly/pretty-slack-notify:
+         webhook_url: $SLACK_WEBHOOK_URL
+         failed_message: FAILURE - Pipeline completed. $WERCKER_RUN_URL    
+
+
+
+
+
+
+# This is a new workflow for deploy to oke dev.
+deploy-to-oke-develop:
+  box: fra.ocir.io/lolctech/fxapiuser/maven:3.6.1-jdk-8
+  steps:
+  - script:
+      name: Set API_KEY file
+      code:  |
+         echo -ne "-----BEGIN RSA PRIVATE KEY-----\n" > gen-api.pem
+         echo -ne $OS_APIKEY | tr " " "\n" >> gen-api.pem
+         echo -ne "\n-----END RSA PRIVATE KEY-----\n" >> gen-api.pem
+         
+  - oci-objectstore:
+      region:       $OS_REGION
+      tenancy-ocid: $OS_TENANCY_OCID
+      user-ocid:    $OS_USER_OCID
+      fingerprint:  $OS_FINGERPRINT
+      namespace:    $OS_NAMESPACE
+      bucket-name:  $OS_BUCKETNAME_DEV
+      command:      get
+      api-key:      "$(cat gen-api.pem)"
+      object-name:  $OS_OBJECT_NAME
+      
+  - script:
+      name: Set kubeconfig variable
+      code: export KUBECONFIG=$PWD/$OS_OBJECT_NAME
+      
+  - wercker/kubectl@3.14.0:
+      command: get nodes
+      
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-deployment
+      command: apply -f kubernetes/dev/deployment.yaml
+      
+  - wercker/kubectl@3.14.0:
+      name: rolling update central-cash-management-deployment
+  #    command: set image deployment/central-cash-management central-cash-management=fra.ocir.io/lolctech/fxapiuser/central-cash-management:latest
+  #    above real rolling update method is temporarily remove untill decide a deployment jar project versioning
+      command: patch deployment central-cash-management -n=fusionx-ui -p '{"spec":{"template":{"spec":{"containers":[{"name":"central-cash-management", "env":[{"name":"LAST_MANUAL_RESTART","value":"'$(date +%s)'"}]}]}}}}'
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-service
+      command: apply -f kubernetes/dev/service.yaml
+      
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-virtual-service
+      command: apply -f kubernetes/dev/virtualService.yaml
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-horizontal-pod-autoscaler
+      command: apply -f kubernetes/dev/horizontalPodAutoscaler.yaml      
+
+  - wercker/kubectl@3.14.0:
+      name: check deployment status
+      command: rollout status deployment/central-cash-management -n fusionx-ui
+
+  after-steps:
+    - install-packages:
+        packages: ruby
+    - wantedly/pretty-slack-notify:
+        webhook_url: $SLACK_WEBHOOK_URL
+        failed_message: FAILURE - Pipeline completed. $WERCKER_RUN_URL
+
+# This is a new workflow for deploy to oke test.
+deploy-to-oke-test:
+  box: fra.ocir.io/lolctech/fxapiuser/maven:3.6.1-jdk-8
+  steps:
+  - script:
+      name: Set API_KEY file
+      code:  |
+         echo -ne "-----BEGIN RSA PRIVATE KEY-----\n" > gen-api.pem
+         echo -ne $OS_APIKEY | tr " " "\n" >> gen-api.pem
+         echo -ne "\n-----END RSA PRIVATE KEY-----\n" >> gen-api.pem
+         
+  - oci-objectstore:
+      region:       $OS_REGION
+      tenancy-ocid: $OS_TENANCY_OCID
+      user-ocid:    $OS_USER_OCID
+      fingerprint:  $OS_FINGERPRINT
+      namespace:    $OS_NAMESPACE
+      bucket-name:  $OS_BUCKETNAME_TEST
+      command:      get
+      api-key:      "$(cat gen-api.pem)"
+      object-name:  $OS_OBJECT_NAME
+      
+  - script:
+      name: Set kubeconfig variable
+      code: export KUBECONFIG=$PWD/$OS_OBJECT_NAME
+      
+  - wercker/kubectl@3.14.0:
+      command: get nodes
+      
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-deployment
+      command: apply -f kubernetes/qa/deployment.yaml
+      
+  - wercker/kubectl@3.14.0:
+      name: rolling update central-cash-management-deployment
+  #    command: set image deployment/central-cash-management central-cash-management=fra.ocir.io/lolctech/fxapiuser/central-cash-management:latest
+  #    above real rolling update method is temporarily remove untill decide a deployment jar project versioning
+      command: patch deployment central-cash-management -n=fusionx-ui -p '{"spec":{"template":{"spec":{"containers":[{"name":"central-cash-management", "env":[{"name":"LAST_MANUAL_RESTART","value":"'$(date +%s)'"}]}]}}}}'
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-service
+      command: apply -f kubernetes/qa/service.yaml
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-virtual-service
+      command: apply -f kubernetes/qa/virtualService.yaml
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-horizontal-pod-autoscaler
+      command: apply -f kubernetes/qa/horizontalPodAutoscaler.yaml         
+
+  - wercker/kubectl@3.14.0:
+      name: check deployment status
+      command: rollout status deployment/central-cash-management -n fusionx-ui
+
+  after-steps:
+    - install-packages:
+        packages: ruby
+    - wantedly/pretty-slack-notify:
+        webhook_url: $SLACK_WEBHOOK_URL
+        failed_message: FAILURE - Pipeline completed. $WERCKER_RUN_URL
+
+# This is a new workflow for deploy to oke uat.
+deploy-to-oke-uat:
+  box: fra.ocir.io/lolctech/fxapiuser/maven:3.6.1-jdk-8
+  steps:
+  - script:
+      name: Set API_KEY file
+      code:  |
+         echo -ne "-----BEGIN RSA PRIVATE KEY-----\n" > gen-api.pem
+         echo -ne $OS_APIKEY | tr " " "\n" >> gen-api.pem
+         echo -ne "\n-----END RSA PRIVATE KEY-----\n" >> gen-api.pem
+          
+  - oci-objectstore:
+      region:       $OS_REGION
+      tenancy-ocid: $OS_TENANCY_OCID
+      user-ocid:    $OS_USER_OCID
+      fingerprint:  $OS_FINGERPRINT
+      namespace:    $OS_NAMESPACE
+      bucket-name:  $OS_BUCKETNAME_UAT
+      command:      get
+      api-key:      "$(cat gen-api.pem)"
+      object-name:  $OS_OBJECT_NAME
+      
+  - script:
+      name: Set kubeconfig variable
+      code: export KUBECONFIG=$PWD/$OS_OBJECT_NAME
+      
+  - wercker/kubectl@3.14.0:
+      command: get nodes
+      
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-deployment
+      command: apply -f kubernetes/uat/deployment.yaml
+      
+  - wercker/kubectl@3.14.0:
+      name: rolling update central-cash-management-deployment
+  #    command: set image deployment/central-cash-management central-cash-management=fra.ocir.io/lolctech/fxapiuser/central-cash-management:latest
+  #    above real rolling update method is temporarily remove untill decide a deployment jar project versioning
+      command: patch deployment central-cash-management -n=fusionx-ui -p '{"spec":{"template":{"spec":{"containers":[{"name":"central-cash-management", "env":[{"name":"LAST_MANUAL_RESTART","value":"'$(date +%s)'"}]}]}}}}'
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-service
+      command: apply -f kubernetes/uat/service.yaml
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-virtual-service
+      command: apply -f kubernetes/uat/virtualService.yaml
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-horizontal-pod-autoscaler
+      command: apply -f kubernetes/uat/horizontalPodAutoscaler.yaml        
+
+  - wercker/kubectl@3.14.0:
+      name: check deployment status
+      command: rollout status deployment/central-cash-management -n fusionx-ui
+
+  after-steps:
+    - install-packages:
+        packages: ruby
+    - wantedly/pretty-slack-notify:
+        webhook_url: $SLACK_WEBHOOK_URL
+        failed_message: FAILURE - Pipeline completed. $WERCKER_RUN_URL
+
+# This is a new workflow for deploy to oke master.
+deploy-to-oke-master:
+  box: fra.ocir.io/lolctech/fxapiuser/maven:3.6.1-jdk-8
+  steps:
+  - script:
+      name: Set API_KEY file
+      code:  |
+         echo -ne "-----BEGIN RSA PRIVATE KEY-----\n" > gen-api.pem
+         echo -ne $OS_APIKEY | tr " " "\n" >> gen-api.pem
+         echo -ne "\n-----END RSA PRIVATE KEY-----\n" >> gen-api.pem
+         
+  - oci-objectstore:
+      region:       $OS_REGION
+      tenancy-ocid: $OS_TENANCY_OCID
+      user-ocid:    $OS_USER_OCID
+      fingerprint:  $OS_FINGERPRINT
+      namespace:    $OS_NAMESPACE
+      bucket-name:  $OS_BUCKETNAME_MASTER
+      command:      get
+      api-key:      "$(cat gen-api.pem)"
+      object-name:  $OS_OBJECT_NAME
+      
+  - script:
+      name: Set kubeconfig variable
+      code: export KUBECONFIG=$PWD/$OS_OBJECT_NAME
+      
+  - wercker/kubectl@3.14.0:
+      command: get nodes
+      
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-deployment
+      command: apply -f kubernetes/prod/deployment.yaml
+      
+  - wercker/kubectl@3.14.0:
+      name: rolling update central-cash-management-deployment
+  #    command: set image deployment/central-cash-management central-cash-management=fra.ocir.io/lolctech/fxapiuser/central-cash-management:latest
+  #    above rreal rolling update method is temporarily remove untill decide a deployment jar project versioning
+      command: patch deployment central-cash-management -n=fusionx-ui -p '{"spec":{"template":{"spec":{"containers":[{"name":"central-cash-management", "env":[{"name":"LAST_MANUAL_RESTART","value":"'$(date +%s)'"}]}]}}}}'
+      
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-service
+      command: apply -f kubernetes/prod/service.yaml
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-virtual-service
+      command: apply -f kubernetes/prod/virtualService.yaml
+
+  - wercker/kubectl@3.14.0:
+      name: central-cash-management-horizontal-pod-autoscaler
+      command: apply -f kubernetes/prod/horizontalPodAutoscaler.yaml       
+      
+  - wercker/kubectl@3.14.0:
+      name: check deployment status
+      command: rollout status deployment/central-cash-management -n fusionx-ui
+
+  after-steps:
+    - install-packages:
+        packages: ruby
+    - wantedly/pretty-slack-notify:
+        webhook_url: $SLACK_WEBHOOK_URL
+        failed_message: FAILURE - Pipeline completed. $WERCKER_RUN_URL
